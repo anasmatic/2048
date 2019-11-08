@@ -19,8 +19,10 @@ public class CellsController : MonoBehaviour
 
     internal void NewGame()
     {
-        FillEmptyCell();
-        FillEmptyCell();
+        //FillEmptyCell();
+        //FillEmptyCell();
+        _cellsModel.Create4x4();
+        _cellsModel.DebugStart();
     }
 
     public void MoveUp()
@@ -35,7 +37,7 @@ public class CellsController : MonoBehaviour
 
     public void MoveRight()
     {
-        //_cellsModel.ShiftAllRight();
+        _cellsModel.ShiftAllRight();
     }
 
     public void MoveLeft()
