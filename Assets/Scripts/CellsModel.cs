@@ -138,7 +138,7 @@ public class CellsModel : MonoBehaviour
                 //cell.x = _lastCell.x;
 
                 _mergedCells.Add(_lastCell);
-                DrawDebugArray(_lastCell);
+                //DrawDebugArray(_lastCell);
                 MoveCellUp(_lastCell);
             }
             
@@ -185,6 +185,7 @@ public class CellsModel : MonoBehaviour
                 //cell.x += 1;
 
                 _mergedCells.Add(_lastCell);
+                //DrawDebugArray(_lastCell);
                 MoveCellDown(_lastCell);
             }
         }
@@ -212,12 +213,28 @@ public class CellsModel : MonoBehaviour
         //if we haven't reached last row -far left-
         if (cell.y - 1 >= 0)
         {
-            if (cells4x4[(int) cell.x, (int) cell.y - 1] == 0)
+            _lastCell.x = cell.x;
+            _lastCell.y = cell.y-1;
+            //if cell on the left is empty
+            if (cells4x4[(int) _lastCell.x, (int) _lastCell.y] == 0)
             {
-                cells4x4[(int)cell.x, (int)cell.y-1] = cells4x4[(int)cell.x, (int)cell.y];
+                cells4x4[(int)_lastCell.x, (int)_lastCell.y] = cells4x4[(int)cell.x, (int)cell.y];
                 cells4x4[(int)cell.x, (int)cell.y] = 0;
-                cell.y -= 1;
-                MoveCellLeft(cell);
+                //cell.y -= 1;
+                MoveCellLeft(_lastCell);
+            }
+            //last cell on left was not merged && it equals the cell next to it
+            else if (_mergedCells.Contains(_lastCell) == false &&
+                cells4x4[(int) _lastCell.x, (int) _lastCell.y] == cells4x4[(int)cell.x, (int)cell.y])
+            {
+                //lets upgrade and merge them   
+                cells4x4[(int)_lastCell.x, (int)_lastCell.y] *= cells4x4[(int)cell.x, (int)cell.y];
+                cells4x4[(int)cell.x, (int)cell.y] = 0;
+                //cell.x += 1;
+
+                _mergedCells.Add(_lastCell);
+                //DrawDebugArray(_lastCell);
+                MoveCellLeft(_lastCell);
             }
         }
     }
@@ -244,12 +261,25 @@ public class CellsModel : MonoBehaviour
         //if we haven't reached last row -far right-
         if (cell.y+1 < cells4x4.GetLength(1))
         {
-            if (cells4x4[(int)cell.x, (int)cell.y + 1] == 0)
+            _lastCell.x = cell.x;
+            _lastCell.y = cell.y+1;
+            //if cell on the right is empty
+            if (cells4x4[(int)_lastCell.x, (int)_lastCell.y] == 0)
             {
-                cells4x4[(int)cell.x, (int)cell.y + 1] = cells4x4[(int)cell.x, (int)cell.y];
+                cells4x4[(int)_lastCell.x, (int)_lastCell.y] = cells4x4[(int)cell.x, (int)cell.y];
                 cells4x4[(int)cell.x, (int)cell.y] = 0;
                 cell.y += 1;
                 MoveCellRight(cell);
+            }else if(_mergedCells.Contains(_lastCell)==false && 
+                cells4x4[(int)_lastCell.x, (int)_lastCell.y] == cells4x4[(int)cell.x, (int)cell.y])
+            {
+                cells4x4[(int)_lastCell.x, (int)_lastCell.y] *= cells4x4[(int)cell.x, (int)cell.y];
+                cells4x4[(int)cell.x, (int)cell.y] = 0;
+                //cell.x = _lastCell.x;
+
+                _mergedCells.Add(_lastCell);
+                //DrawDebugArray(_lastCell);
+                MoveCellRight(_lastCell);
             }
         }
     }

@@ -11,12 +11,6 @@ public class CellsController : MonoBehaviour
         _cellsModel = GetComponent<CellsModel>();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     internal void NewGame()
     {
         //FillEmptyCell();
@@ -45,14 +39,12 @@ public class CellsController : MonoBehaviour
         _cellsModel.ShiftAllLeft();
     }
 
-
     private Vector2 FillEmptyCell()
     {
         Vector2 cell = _cellsModel.FillEmptyCell();
         print(cell.x +","+ cell.y);
         return cell;
     }
-
 
     public void Move(KeyCode direction)
     {
