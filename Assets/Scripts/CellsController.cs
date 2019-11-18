@@ -5,44 +5,51 @@ using UnityEngine;
 public class CellsController : MonoBehaviour
 {
     private CellsModel _cellsModel;
+    private CellsView _cellsView;
     // Start is called before the first frame update
     void Start()
     {
         _cellsModel = GetComponent<CellsModel>();
+        _cellsView = GetComponent<CellsView>();
+
+        
     }
 
     internal void NewGame()
     {
-        //FillEmptyCell();
-        //FillEmptyCell();
         _cellsModel.Create4x4();
-        _cellsModel.DebugStart();
+
+        FillEmptyCell();
+        FillEmptyCell();
+        FillEmptyCell();
+        FillEmptyCell();
+        //_cellsModel.DebugStart();
     }
 
-    public void MoveUp()
+    private void MoveUp()
     {
         _cellsModel.ShiftAllUp();
     }
     
-    public void MoveDown()
+    private void MoveDown()
     {
         _cellsModel.ShiftAllDown();
     }
 
-    public void MoveRight()
+    private void MoveRight()
     {
         _cellsModel.ShiftAllRight();
     }
 
-    public void MoveLeft()
+    private void MoveLeft()
     {
         _cellsModel.ShiftAllLeft();
     }
 
-    private Vector2 FillEmptyCell()
+    private Cell FillEmptyCell()
     {
-        Vector2 cell = _cellsModel.FillEmptyCell();
-        print(cell.x +","+ cell.y);
+        Cell cell = _cellsModel.FillEmptyCell();
+        _cellsView.FillNewEmptyCell(FlipCoordinatesForView(cell));
         return cell;
     }
 
@@ -63,7 +70,24 @@ public class CellsController : MonoBehaviour
                 MoveLeft();
                 break;
         }
-
+        //TODO: notify view with merged cells 
+        _cellsView.MergeCells(_cellsModel.MergedCells);
+        //TODO: empty merged cells list here not in FillEmptyCell
         FillEmptyCell();
+        //TODO: Notify view with new Empty Cell
+        _cellsView.UpdateCells(_cellsModel.Cells4x4);
+        //reset parameters as willDestroy and isNew , etc..
+        _cellsModel.ResetCellsParameters();
+    }
+
+    private Cell FlipCoordinatesForView(Cell cell)
+    {
+        print("bfr:" + cell);
+        cell.pos.x = cell.pos.x + cell.pos.y;
+        cell.pos.y = cell.pos.x - cell.pos.y;
+        cell.pos.x = cell.pos.x - cell.pos.y;
+        cell.pos.y *= -1;
+        print("ftr:" + cell.pos);
+        return cell;
     }
 }
