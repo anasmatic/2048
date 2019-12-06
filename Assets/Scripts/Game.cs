@@ -6,16 +6,25 @@ public class Game : MonoBehaviour
 {
     private CellsController _cellsController;
 
+    [SerializeField] Texture2D texture;
+    private Sprite[] _sprites;
+    
+
     // Start is called before the first frame update
-    void Start()
+    IEnumerator Start()
     {
         _cellsController = GetComponent<CellsController>();
-        NewGame();
+
+        _sprites = Resources.LoadAll<Sprite>(texture.name);
+        
+        yield return new WaitUntil(() => _sprites.Length == 14);
+
+        NewGame(_sprites);
     }
 
-    private void NewGame()
+    private void NewGame(Sprite[] _sprites)
     {
-        _cellsController.NewGame();
+        _cellsController.NewGame(_sprites);
     }
 
     // Update is called once per frame

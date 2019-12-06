@@ -6,23 +6,36 @@ public class CellsController : MonoBehaviour
 {
     private CellsModel _cellsModel;
     private CellsView _cellsView;
+    [SerializeField]private GameObject gridContainer;
+    [SerializeField] private GameObject cellPrefab;
+    private CellController[] allCells = new CellController[4*4];
+    
     // Start is called before the first frame update
     void Start()
     {
         _cellsModel = GetComponent<CellsModel>();
         _cellsView = GetComponent<CellsView>();
-
         
     }
 
-    internal void NewGame()
+    internal void NewGame(Sprite[] _sprites)
     {
-        _cellsModel.Create4x4();
+        //init each cell controller
+        allCells = new CellController[4 * 4];
+        for (int i = 0; i < allCells.Length; i++)
+        {
+            print(i+":"+ allCells[i]);
+            allCells[i] = Instantiate(cellPrefab, gridContainer.transform, true).GetComponent<CellController>();
+            allCells[i].Init(_sprites);
+        }
+        _cellsModel.Create4x4(ref allCells);
 
         FillEmptyCell();
         FillEmptyCell();
         FillEmptyCell();
         FillEmptyCell();
+
+        Move(KeyCode.None);
         //_cellsModel.DebugStart();
     }
 
@@ -46,9 +59,9 @@ public class CellsController : MonoBehaviour
         _cellsModel.ShiftAllLeft();
     }
 
-    private Cell FillEmptyCell()
+    private CellModel FillEmptyCell()
     {
-        Cell cell = _cellsModel.FillEmptyCell();
+        CellModel cell = _cellsModel.FillEmptyCell();
         _cellsView.FillNewEmptyCell(FlipCoordinatesForView(cell));
         return cell;
     }
@@ -70,17 +83,23 @@ public class CellsController : MonoBehaviour
                 MoveLeft();
                 break;
         }
+
         //TODO: notify view with merged cells 
-        _cellsView.MergeCells(_cellsModel.MergedCells);
+        //_cellsView.MergeCells(_cellsModel.MergedCells);
         //TODO: empty merged cells list here not in FillEmptyCell
-        FillEmptyCell();
+        //FillEmptyCell();
+        //update Every CellController
+        for (int i = 0; i < allCells.Length; i++)
+        {
+            allCells[i].MoveUpdate();
+        }
         //TODO: Notify view with new Empty Cell
-        _cellsView.UpdateCells(_cellsModel.Cells4x4);
+        //_cellsView.UpdateCells(_cellsModel.Cells4x4);
         //reset parameters as willDestroy and isNew , etc..
         _cellsModel.ResetCellsParameters();
     }
 
-    private Cell FlipCoordinatesForView(Cell cell)
+    private CellModel FlipCoordinatesForView(CellModel cell)
     {
         print("bfr:" + cell);
         cell.pos.x = cell.pos.x + cell.pos.y;

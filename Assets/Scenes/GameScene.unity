@@ -4329,6 +4329,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6157b6148b6c4824d9f62e80e7d23829, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gridContainer: {fileID: 2088027129}
+  cellPrefab: {fileID: 7509209807364265781, guid: 51268fcca3eb5de4b801dc26c0d3bf12,
+    type: 3}
 --- !u!114 &1959267526
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4341,6 +4344,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2609272c080106c4f9a4cfa55c40b4b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  texture: {fileID: 2800000, guid: c5d5578301b305e4d93ee831bdb9c4a2, type: 3}
 --- !u!4 &1959267527
 Transform:
   m_ObjectHideFlags: 0

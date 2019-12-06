@@ -19,19 +19,20 @@ public class CellsView : MonoBehaviour
         
     }
 
-    internal void MergeCells(List<Cell> mergedCells)
+    internal void MergeCells(List<CellModel> mergedCells)
     {
         
     }
 
-    internal void FillNewEmptyCell(Cell cell)
+    internal void FillNewEmptyCell(CellModel cell)
     {
-        print(cell.pos);
-        
+        print("old FillNewEmptyCell ->" + cell.pos);
+        /*
         GameObject newCell = Instantiate(SelectPrefabAccordingToCellValue(cell.value), 
                                             _gridContainer.transform, true);
         newCell.transform.localPosition = (Vector2) cell.pos;
         //_gridContainer
+        */
     }
 
     private GameObject SelectPrefabAccordingToCellValue(int value)
@@ -39,9 +40,18 @@ public class CellsView : MonoBehaviour
         return _cellsMapper[value]._cellPrefab;
     }
 
-    internal void UpdateCells(Cell[,] cells4x4)
+    internal void UpdateCells(CellModel[,] cells4x4)
     {
-        
+        for (int i = 0; i < cells4x4.GetLength(0); i++)
+        {
+            for (int j = 0; j < cells4x4.GetLength(1); j++)
+            {
+                if(cells4x4[i, j].value == 0)
+                    cells4x4[i, j].to = cells4x4[i, j].pos;
+                cells4x4[i, j].willDestroy = false;
+                cells4x4[i, j].isNew = false;
+            }
+        }
     }
 }
 /*

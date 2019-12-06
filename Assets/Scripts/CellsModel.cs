@@ -9,47 +9,45 @@ public class CellsModel : MonoBehaviour
     [SerializeField] private Text[] _debugTexts;
     private int _currentDebugTextIndex;
 
-    private int[,] cellsInt4x4 = new int[4,4];
-    private Cell[,] cells4x4 = new Cell[4, 4];
-    public Cell[,] Cells4x4 { get => cells4x4; set => cells4x4 = value; }
+    [System.Obsolete]private int[,] cellsInt4x4 = new int[4,4];
+    private CellModel[,] cells4x4 = new CellModel[4, 4];
+    public CellModel[,] Cells4x4 { get => cells4x4; set => cells4x4 = value; }
 
     private List<Vector2Int> _mergedCellsInt;
     public List<Vector2Int> MergedCellsInt { get => _mergedCellsInt; }
 
-    private List<Cell> _mergedCells;
-    public List<Cell> MergedCells { get => _mergedCells; }
+    private List<CellModel> _mergedCells;
+    public List<CellModel> MergedCells { get => _mergedCells; }
 
     private Vector2Int _lastCell;
 
-    // Start is called before the first frame update
-    public void Create4x4()
+    // map cell all-cells-controllers multiDim array to cellsModel array of arrays
+    public void Create4x4(ref CellController[] cellControllers)
     {
-        cellsInt4x4 = new int[4,4];
-        cells4x4 = new Cell[4, 4];
-        _mergedCellsInt = new List<Vector2Int>();
-        _mergedCells = new List<Cell>();
-    }
-    public void DebugStart()
-    {
-        for (int i = 0; i < _debugTexts.Length; i++)
+        int index = 0;
+        //cellsInt4x4 = new int[4,4];
+        cells4x4 = new CellModel[4, 4];
+        for (int i = 0; i < cells4x4.GetLength(0); i++)
         {
-            _debugTexts[i].text = "---" + (i + 1) + "---";
+            for (int j = 0; j < cells4x4.GetLength(1); j++)
+            {
+                //add cell model from cell controllers to cells Array
+                index = (i * 4) + j;
+                cellControllers[index].cellModel.pos =
+                    cellControllers[index].cellModel.from =
+                        cellControllers[index].cellModel.to = new Vector2Int(i, j);
+                cells4x4[i, j] = cellControllers[index].cellModel;
+            }
         }
-        cellsInt4x4 = new int[4, 4]
-        {
-            {0, 2, 0, 0},
-            {0, 2, 0, 0},
-            {0, 2, 0, 0},
-            {0, 2, 0, 0}
-        };
-        DrawDebugArray(Vector2Int.zero);
+
+        _mergedCellsInt = new List<Vector2Int>();
+        _mergedCells = new List<CellModel>();
     }
 
     // Update is called once per frame
-    internal Cell FillEmptyCell()
+    internal CellModel FillEmptyCell()
     {
-        Cell cell;
-        cell.pos = GetEmptyCell();
+        CellModel cell = GetEmptyCell();
         cell.from = cell.to = cell.pos;
         cell.willDestroy = false;
         cell.isNew = true;
@@ -117,7 +115,7 @@ public class CellsModel : MonoBehaviour
     
     }
 
-    private void DrawDebugArrayCells(Cell cell, string color = "white")
+    private void DrawDebugArrayCells(CellModel cell, string color = "white")
     {
         string debug = "";
         Text currentText;
@@ -179,7 +177,7 @@ public class CellsModel : MonoBehaviour
     }
 
     System.Random rnd = new System.Random();
-    internal Vector2Int GetEmptyCell()
+    internal CellModel GetEmptyCell()
     {
         //int row = rnd.Next(cellsInt4x4.GetLength(0));
         //int column = rnd.Next(cellsInt4x4.GetLength(1));
@@ -188,11 +186,11 @@ public class CellsModel : MonoBehaviour
 
         //if (cellsInt4x4[row, column] == 0)
         if (cells4x4[row, column].value == 0)
-            return new Vector2Int(row, column);
+            return cells4x4[row, column];
         else
             return GetEmptyCell();
     }
-    private void MergeTwoCells(ref Cell cell, ref Cell lastCell)
+    private void MergeTwoCells(ref CellModel cell, ref CellModel lastCell)
     {
         lastCell.value += 1;
         lastCell.to = cell.pos;
@@ -203,7 +201,7 @@ public class CellsModel : MonoBehaviour
         cell.willDestroy = true;
         cell.from = cell.to = cell.pos;
     }
-    private void SwapTwoCells(ref Cell cell, ref Cell lastCell)
+    private void SwapTwoCells(ref CellModel cell, ref CellModel lastCell)
     {
         lastCell.value = cell.value;
         lastCell.to = cell.pos;
@@ -233,11 +231,11 @@ public class CellsModel : MonoBehaviour
     public void ShiftAllUp()
     {
         //start from top (0,0)
-        for (int i = 0; i < cellsInt4x4.GetLength(0); i++)
+        for (int i = 0; i < cells4x4.GetLength(0); i++)
         {
             if (i > 0)
             {
-                for (int j = 0; j < cellsInt4x4.GetLength(1); j++)
+                for (int j = 0; j < cells4x4.GetLength(1); j++)
                 {
                     MoveCellUp(i, j);
                 }
@@ -464,17 +462,4 @@ public class CellsModel : MonoBehaviour
             }
         }
     }
-}
-
-
-public struct Cell
-{
-    public Vector2Int pos;
-    public int value;
-    //movement
-    public Vector2Int from;
-    public Vector2Int to;
-    //per move
-    public bool willDestroy;
-    public bool isNew;
 }
